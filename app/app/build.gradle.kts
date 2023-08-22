@@ -55,6 +55,7 @@ android {
 
 dependencies {
 
+    implementation("androidx.navigation:navigation-compose:2.7.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("com.google.dagger:hilt-android:2.47")
     implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
@@ -63,6 +64,8 @@ dependencies {
 
     implementation("com.google.dagger:hilt-android:2.44")
     implementation("com.google.firebase:firebase-firestore-ktx:24.7.0")
+    implementation("androidx.core:core-ktx:+")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.0.0")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
