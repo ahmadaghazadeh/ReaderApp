@@ -66,6 +66,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:24.7.0")
     implementation("androidx.core:core-ktx:+")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.0.0")
+    implementation("com.google.firebase:firebase-auth-ktx:22.1.1")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     implementation ("androidx.compose.material:material-icons-extended")

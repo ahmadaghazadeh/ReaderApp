@@ -2,13 +2,17 @@ package com.ahmad.aghazadeh.readerapp.screens.login
 
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -32,27 +36,63 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.ahmad.aghazadeh.readerapp.R
 import com.ahmad.aghazadeh.readerapp.components.EmailInput
 import com.ahmad.aghazadeh.readerapp.components.InputField
 import com.ahmad.aghazadeh.readerapp.components.PasswordInput
 import com.ahmad.aghazadeh.readerapp.components.ReaderLogo
+import com.ahmad.aghazadeh.readerapp.navigation.ReaderScreens
 
-
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController,
+                viewModel: LoginScreenViewModel= viewModel()
+) {
+    val showLoginForm= rememberSaveable {
+        mutableStateOf(true)
+    }
     Surface(modifier= Modifier.fillMaxSize()) {
-        Column(horizontalAlignment= Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top){
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+        ) {
             ReaderLogo()
-            UserForm() {email, password ->
-                Log.e("dd","xx")
+            if(showLoginForm.value){
+                UserForm(loading = false, isCreateAccount = false)  {email, password ->
+                    viewModel.signInWithEmailAndPassword(email=email,password=password){
+                        navController.navigate(ReaderScreens.HomeScreen.name)
+                    }
+                }
+            }else{
+                UserForm(loading = false, isCreateAccount = true) {email, password ->
+                    viewModel.createUserWithEmailAndPassword(email=email,password=password){
+                        navController.navigate(ReaderScreens.HomeScreen.name)
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.fillMaxWidth().height(30.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val text = if (showLoginForm.value) "Sign up" else "Login"
+                val haveAccount = if (showLoginForm.value) "New User? " else "You have an account? "
+                Text(text = haveAccount)
+                Text(text = text, Modifier.clickable {
+                    showLoginForm.value = !showLoginForm.value
+                })
             }
         }
+
     }
+    
 }
 
 
@@ -82,13 +122,15 @@ fun UserForm(
 
 
     val modifier = Modifier
-        .height(250.dp)
+        .fillMaxWidth()
         .background(MaterialTheme.colorScheme.background)
         .verticalScroll(rememberScrollState())
 
 
-    Column(modifier,horizontalAlignment= Alignment.CenterHorizontally,
+    Column(
+        modifier,horizontalAlignment= Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top) {
+        if(isCreateAccount) Text(text= stringResource(id = R.string.create_account),modifier=Modifier.padding(8.dp))
         EmailInput(emailState = email
             , enabled = true
             , imeAction = ImeAction.Next
@@ -120,14 +162,15 @@ fun UserForm(
 @Composable
 fun SubmitButton(text: String, loading: Boolean, validInputs: Boolean, onClick:()-> Unit) {
     Button(onClick = onClick,
-        modifier = Modifier.padding(3.dp)
+        modifier = Modifier
+            .padding(3.dp)
             .fillMaxWidth(),
-        enabled =!loading && validInputs,
+        enabled =!(!loading && validInputs),
         shape = CircleShape
         ) {
+        Log.e("xx","${!loading && validInputs}",)
         if(loading) CircularProgressIndicator(modifier=Modifier.size(25.dp)) else Text(text = text)
 
     }
-
 }
 
