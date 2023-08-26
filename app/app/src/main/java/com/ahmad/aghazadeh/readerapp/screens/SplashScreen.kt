@@ -27,6 +27,7 @@ import androidx.navigation.NavController
 import com.ahmad.aghazadeh.readerapp.components.ReaderLogo
 import com.ahmad.aghazadeh.readerapp.navigation.ReaderScreens
 import com.ahmad.aghazadeh.readerapp.ui.AppColors
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 @Preview
@@ -44,7 +45,12 @@ fun SplashScreen(navController: NavController) {
                         .getInterpolation(it)
                 }))
         delay(2000L)
-        navController.navigate(ReaderScreens.LoginScreen.name)
+        if(FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()){
+            navController.navigate(ReaderScreens.LoginScreen.name)
+        }else{
+            navController.navigate(ReaderScreens.HomeScreen.name)
+        }
+
     }
     Surface(modifier= Modifier
         .padding(16.dp)
