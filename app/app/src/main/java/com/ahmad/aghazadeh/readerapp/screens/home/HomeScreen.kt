@@ -1,19 +1,30 @@
 package com.ahmad.aghazadeh.readerapp.screens.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -32,9 +43,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ahmad.aghazadeh.readerapp.R
+import com.ahmad.aghazadeh.readerapp.navigation.ReaderScreens
 import com.ahmad.aghazadeh.readerapp.ui.AppColors
+import com.google.firebase.auth.FirebaseAuth
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun HomeScreen(navController: NavController) {
 
@@ -48,10 +61,23 @@ fun HomeScreen(navController: NavController) {
 
             })
         },
-        modifier = Modifier.fillMaxSize()
-    )  {
-
-    }
+        content = { innerPadding ->
+            LazyColumn(
+                // consume insets as scaffold doesn't do it by default
+                modifier = Modifier.consumeWindowInsets(innerPadding),
+                contentPadding = innerPadding
+            ) {
+                items(count = 100) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .background(AppColors.red200)
+                    )
+                }
+            }
+        }
+    )
 
 }
 
@@ -63,6 +89,7 @@ fun ReaderAppBar(title: String,showProfile:Boolean=true,
     Row(verticalAlignment = Alignment.CenterVertically) {
         if (showProfile){
             Icon(imageVector =Icons.Default.Favorite,
+                tint = AppColors.red900.copy(alpha=0.5f),
                 contentDescription = "Application Icon",
                 modifier= Modifier
                     .clip(RoundedCornerShape(12.dp))
@@ -72,6 +99,15 @@ fun ReaderAppBar(title: String,showProfile:Boolean=true,
         Spacer(modifier = Modifier.width(150.dp))
     }
     }, actions = {
+        IconButton(onClick={
+            FirebaseAuth.getInstance().signOut().run {
+                navController.navigate(ReaderScreens.LoginScreen.name)
+            }
+        }){
+            Icon(imageVector = Icons.Default.Logout,
+                tint = AppColors.green900.copy(alpha = 0.5f),
+            contentDescription = "logout Icon")
+        }
 
     })
 }
